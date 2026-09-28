@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://firestore.googleapis.com; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
 <title>Stadiul cererii</title>
 <!--
   Fisa "la zi" pentru beneficiar (eTerra mobil).
@@ -88,7 +89,12 @@
     el.appendChild(d);
   }
 
+  // Proiectul Firebase e FIX. Luat din link, pagina ar fi afisat orice
+  // proiect strain - un link pe domeniul asta cu text scris de altcineva
+  // ("platiti la IBAN..."). Linkul poarta proiectul doar pentru compatibilitate.
+  var PROIECT = "eterra-mobile";
   var m = /^#([a-z0-9-]{4,40})\/([A-Za-z0-9_-]{20,40})$/.exec(location.hash);
+  if (m && m[1] !== PROIECT) m = null;
   if (!m) {
     gol("Link incomplet", "Deschideți linkul exact așa cum l-ați primit.");
     return;
@@ -186,7 +192,7 @@
     adauga(sub, "p", null, "Termenul poate fi prelungit de OCPI; stadiul se poate schimba.");
   }
 
-  var url = "https://firestore.googleapis.com/v1/projects/" + m[1] +
+  var url = "https://firestore.googleapis.com/v1/projects/" + PROIECT +
     "/databases/(default)/documents/fise/" + m[2];
   fetch(url, { referrerPolicy: "no-referrer" })
     .then(function (r) {
